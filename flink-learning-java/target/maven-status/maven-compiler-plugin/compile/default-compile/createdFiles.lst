@@ -1,0 +1,5 @@
+com/zhangdi/flink/java/apitest/source/SourceFromKafka.class
+com/zhangdi/flink/java/apitest/source/SensorSourceFromRandom.class
+com/zhangdi/flink/java/apitest/model/SensorReading.class
+com/zhangdi/flink/java/BatchJob.class
+com/zhangdi/flink/java/apitest/source/SourceFromRandomDemo.class
