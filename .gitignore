@@ -109,3 +109,7 @@ fabric.properties
 *.class
 *.log
 
+# target
+flink-learning-java/target/
+flink-learning-scala/target/
+
