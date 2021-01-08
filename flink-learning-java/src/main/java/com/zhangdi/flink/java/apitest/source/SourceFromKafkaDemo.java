@@ -38,7 +38,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
  *
  * @author zhangdi
  */
-public class SourceFromKafka {
+public class SourceFromKafkaDemo {
 
   public static void main(String[] args) throws Exception {
     // set up the streaming execution environment
