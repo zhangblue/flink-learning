@@ -2,12 +2,12 @@ package com.zhangdi.flink.cep
 
 import java.util.Properties
 
-import com.zhangdi.flink.model.PageFrom
 import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.api.common.serialization.SimpleStringSchema
-import org.apache.flink.cep.CEP
-import org.apache.flink.cep.pattern.Pattern
-import org.apache.flink.cep.pattern.conditions.SimpleCondition
+import org.apache.flink.api.java.functions.KeySelector
+import org.apache.flink.cep.pattern.conditions.IterativeCondition
+import org.apache.flink.cep.scala.CEP
+import org.apache.flink.cep.scala.pattern.Pattern
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.time.Time
@@ -21,6 +21,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
  **/
 object CEPDemo {
 
+  case class PageFrom(id: String, from: String, time: Long)
 
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
@@ -32,16 +33,15 @@ object CEPDemo {
 
     val kafkaDataStream: DataStream[String] = env.addSource(new FlinkKafkaConsumer[String]("test-topic", new SimpleStringSchema(), properties))
 
+    val pageFomDataStream: DataStream[PageFrom] = kafkaDataStream.map(new MyMapFunction).assignAscendingTimestamps(_.time).keyBy(new MyKeySelector)
 
-    val value: DataStream[PageFrom] = kafkaDataStream.map(new MyMapFunction).assignAscendingTimestamps(_.time).keyBy(_.id)
-
-
-    val patternCondition: Pattern[PageFrom, PageFrom] = Pattern
+    val patternCondition = Pattern
       .begin[PageFrom]("start").where(new MyCondition("a"))
       .next("next1").where(new MyCondition("b"))
-      .next("next2").where(new MyCondition("c")).within(Time.seconds(5))
+      .next("next2").where(new MyCondition("c"))
+      .within(Time.seconds(5))
 
-    val value1 = CEP.pattern(value, patternCondition)
+    val value1 = CEP.pattern(pageFomDataStream, patternCondition)
 
 
     env.execute("flink scala cep")
@@ -55,11 +55,18 @@ object CEPDemo {
     }
   }
 
-  class MyCondition(from: String) extends SimpleCondition[PageFrom] {
-    override def filter(value: PageFrom): Boolean = {
+  class MyCondition(from: String) extends IterativeCondition[PageFrom] {
+    override def filter(value: PageFrom, ctx: IterativeCondition.Context[PageFrom]): Boolean = {
       value.from.equals(from)
     }
   }
+
+  class MyKeySelector extends KeySelector[PageFrom, String] {
+    override def getKey(value: PageFrom): String = {
+      value.id
+    }
+  }
+
 
 }
 
