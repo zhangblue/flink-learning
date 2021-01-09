@@ -23,6 +23,8 @@
     <maven.compiler.source>${target.java.version}</maven.compiler.source>
     <maven.compiler.target>${target.java.version}</maven.compiler.target>
     <log4j.version>2.12.1</log4j.version>
+<!--    <scope.type>provided</scope.type>-->
+    <scope.type>compile</scope.type>
   </properties>
 
   <dependencyManagement>

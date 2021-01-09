@@ -16,6 +16,7 @@ object SensorSourceFromKafka {
 
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
 
     val properties = new Properties
     properties.setProperty("bootstrap.servers", "172.16.36.123:9092")
@@ -23,6 +24,7 @@ object SensorSourceFromKafka {
 
     val dataStream: DataStream[String] = env.addSource(new FlinkKafkaConsumer[String]("test-topic", new SimpleStringSchema(), properties))
     dataStream.print("value = ")
+
     env.execute("my scala job")
   }
 

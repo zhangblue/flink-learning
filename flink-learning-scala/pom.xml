@@ -54,13 +54,20 @@ under the License.
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-scala_${scala.binary.version}</artifactId>
       <version>${flink.version}</version>
-      <scope>provided</scope>
+      <scope>${scope.type}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
       <version>${flink.version}</version>
-      <scope>provided</scope>
+      <scope>${scope.type}</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-clients_${scala.binary.version}</artifactId>
+      <version>${flink.version}</version>
+      <scope>${scope.type}</scope>
     </dependency>
 
 
@@ -70,7 +77,7 @@ under the License.
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-cep-scala_${scala.binary.version}</artifactId>
       <version>${flink.version}</version>
-      <scope>provided</scope>
+      <scope>${scope.type}</scope>
     </dependency>
 
     <!-- Scala Library, provided by Flink as well. -->
@@ -78,7 +85,7 @@ under the License.
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
-      <scope>provided</scope>
+      <scope>${scope.type}</scope>
     </dependency>
 
     <dependency>
