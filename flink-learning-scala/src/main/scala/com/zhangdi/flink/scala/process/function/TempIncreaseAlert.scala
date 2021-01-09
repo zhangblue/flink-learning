@@ -1,7 +1,7 @@
 package com.zhangdi.flink.scala.process.function
 
 import com.zhangdi.flink.scala.model.SensorReading
-import com.zhangdi.flink.scala.source.SensorSourceFromRandom
+import com.zhangdi.flink.scala.source.random.SensorSourceFromRandom
 import org.apache.flink.api.common.state.ValueStateDescriptor
 import org.apache.flink.api.scala.typeutils.Types
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction

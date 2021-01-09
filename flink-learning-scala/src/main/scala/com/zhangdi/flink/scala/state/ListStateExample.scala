@@ -1,7 +1,7 @@
 package com.zhangdi.flink.scala.state
 
 import com.zhangdi.flink.scala.model.SensorReading
-import com.zhangdi.flink.scala.source.SensorSourceFromRandom
+import com.zhangdi.flink.scala.source.random.SensorSourceFromRandom
 import org.apache.flink.api.common.state.{ListStateDescriptor, ValueStateDescriptor}
 import org.apache.flink.api.scala.typeutils.Types
 import org.apache.flink.runtime.state.filesystem.FsStateBackend

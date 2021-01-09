@@ -1,7 +1,7 @@
 package com.zhangdi.flink.scala.window.function
 
 import com.zhangdi.flink.scala.model.SensorReading
-import com.zhangdi.flink.scala.source.SensorSourceFromRandom
+import com.zhangdi.flink.scala.source.random.SensorSourceFromRandom
 import org.apache.flink.api.common.functions.ReduceFunction
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow

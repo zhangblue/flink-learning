@@ -1,4 +1,4 @@
-package com.zhangdi.flink.scala.source
+package com.zhangdi.flink.scala.source.random
 
 import java.util.Calendar
 
