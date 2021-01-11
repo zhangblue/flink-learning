@@ -5,20 +5,22 @@ import java.util.Properties
 
 import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.api.common.serialization.SimpleStringSchema
+import org.apache.flink.api.common.typeinfo.{TypeHint, TypeInformation}
 import org.apache.flink.api.java.functions.KeySelector
-import org.apache.flink.cep.PatternSelectFunction
 import org.apache.flink.cep.pattern.conditions.IterativeCondition
 import org.apache.flink.cep.scala.pattern.Pattern
 import org.apache.flink.cep.scala.{CEP, PatternStream}
+import org.apache.flink.cep.{PatternFlatSelectFunction, PatternFlatTimeoutFunction, PatternSelectFunction}
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
+import org.apache.flink.util.Collector
 
 /**
  * @description: 将命中规则引擎的数据输出.
  *               1.同一个id在5秒钟内，必须经过a->b->c。
- *               2.将没有命中规则的数据从侧数据流中输出
+ *               2.将没有命中规则的数据从侧数据流中输出. 侧输出流
  * @author zhangdi
  * @date 2021/1/8 下午2:59
  * @since ${since}
@@ -50,9 +52,23 @@ object CEPExample2 {
 
     val patternStream: PatternStream[PageFrom] = CEP.pattern(pageFomDataStream, patternCondition)
 
+    val outputTag: OutputTag[String] = OutputTag("not_hit")
+    patternStream.flatSelect(outputTag, new MyPatternFlatTimeoutFunction, new MyPatternFlatSelectFunction)
+    patternStream.flatSelect(outputTag)((map, l1, coll) => {
 
+
+    })((map, coll) => {
+      val start: PageFrom = map("start").iterator.next()
+      val next1: PageFrom = map("next1").iterator.next()
+      val next2: PageFrom = map("next2").iterator.next()
+
+      val ret = "命中规则用户: " + start.id + " 分别在ip " + start.ip + " ; " + next1.ip + " ; " + next2.ip + " 中出现了!"
+      coll.collect(TypeInformation.of(new TypeHint[String])(){})
+
+    })
 
     val dataStream: DataStream[String] = patternStream.select(new MyPatternSelectFunction)
+
 
     dataStream.print("value = ")
 
@@ -66,6 +82,18 @@ object CEPExample2 {
       val next1 = pattern.get("next1").iterator().next()
       val next2 = pattern.get("next2").iterator().next()
       "命中规则用户: " + start.id + " 分别在ip " + start.ip + " ; " + next1.ip + " ; " + next2.ip + " 中出现了!"
+    }
+  }
+
+  class MyPatternFlatTimeoutFunction extends PatternFlatTimeoutFunction[PageFrom, String] {
+    override def timeout(pattern: util.Map[String, util.List[PageFrom]], timeoutTimestamp: Long, out: Collector[String]): Unit = {
+
+    }
+  }
+
+  class MyPatternFlatSelectFunction extends PatternFlatSelectFunction[PageFrom, String] {
+    override def flatSelect(pattern: util.Map[String, util.List[PageFrom]], out: Collector[String]): Unit = {
+
     }
   }
 
