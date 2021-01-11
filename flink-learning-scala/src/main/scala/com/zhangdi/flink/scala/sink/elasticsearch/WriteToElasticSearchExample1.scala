@@ -31,15 +31,17 @@ object WriteToElasticSearchExample1 {
     val esSinkBuilder: ElasticsearchSink.Builder[SensorReading] = new ElasticsearchSink.Builder[SensorReading](httpHost, new MyElasticsearchSinkFunction("sensor-index"))
     esSinkBuilder.setBulkFlushMaxActions(10)
 
-
     esSinkBuilder.setRestClientFactory(new MyRestClientFactory)
-
-
     env.addSource(new SensorSourceFromRandom).addSink(esSinkBuilder.build())
     env.execute("sink to elasticsearch example1")
   }
 
 
+  /**
+   * 自定义 elasticsearch sink
+   *
+   * @param index
+   */
   class MyElasticsearchSinkFunction(index: String) extends ElasticsearchSinkFunction[SensorReading] {
     override def process(element: SensorReading, ctx: RuntimeContext, indexer: RequestIndexer): Unit = {
       val mapSource = changeSource(element)
@@ -51,6 +53,12 @@ object WriteToElasticSearchExample1 {
     }
 
 
+    /**
+     * 将SensorReading 转为map对象
+     *
+     * @param element
+     * @return
+     */
     def changeSource(element: SensorReading): util.Map[String, Any] = {
       val mapSource = new util.HashMap[String, Any]()
       mapSource.put("sensor_id", element.id)
