@@ -5,7 +5,6 @@ import java.util.Properties
 
 import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.api.common.serialization.SimpleStringSchema
-import org.apache.flink.api.common.typeinfo.{TypeHint, TypeInformation}
 import org.apache.flink.api.java.functions.KeySelector
 import org.apache.flink.cep.pattern.conditions.IterativeCondition
 import org.apache.flink.cep.scala.pattern.Pattern
@@ -52,28 +51,36 @@ object CEPExample2 {
 
     val patternStream: PatternStream[PageFrom] = CEP.pattern(pageFomDataStream, patternCondition)
 
-    val outputTag: OutputTag[String] = OutputTag("not_hit")
-    patternStream.flatSelect(outputTag, new MyPatternFlatTimeoutFunction, new MyPatternFlatSelectFunction)
-    patternStream.flatSelect(outputTag)((map, l1, coll) => {
+    //超时的内容输出。scala柯里化特性
+    val timeOutFunction = (map: scala.collection.Map[String, Iterable[PageFrom]], ts: Long, out: Collector[String]) => {
+      val startPage = map("start").iterator.next()
+      out.collect("超时的内容为:" + startPage.id)
+    }
 
-
-    })((map, coll) => {
+    //正确的内容输出。scala柯里化特性
+    val selectFunction = (map: scala.collection.Map[String, Iterable[PageFrom]], coll: Collector[String]) => {
       val start: PageFrom = map("start").iterator.next()
       val next1: PageFrom = map("next1").iterator.next()
       val next2: PageFrom = map("next2").iterator.next()
 
       val ret = "命中规则用户: " + start.id + " 分别在ip " + start.ip + " ; " + next1.ip + " ; " + next2.ip + " 中出现了!"
-      coll.collect(TypeInformation.of(new TypeHint[String])(){})
-
-    })
-
-    val dataStream: DataStream[String] = patternStream.select(new MyPatternSelectFunction)
+      coll.collect(ret)
+    }
 
 
-    dataStream.print("value = ")
+    val outputTag: OutputTag[String] = OutputTag("not_hit")
+    //方法1
+    //    patternStream.flatSelect(outputTag, new MyPatternFlatTimeoutFunction, new MyPatternFlatSelectFunction)
+    //方法2，使用scala柯里化
+    val functionToFunction = patternStream.flatSelect(outputTag)(timeOutFunction)(selectFunction)
 
+    functionToFunction.print("正常的数据：")
 
-    env.execute("flink scala cep")
+    val sideOutPut: DataStream[String] = functionToFunction.getSideOutput(outputTag)
+
+    sideOutPut.print("异常的数据 = ")
+
+    env.execute("flink scala cep example2")
   }
 
   class MyPatternSelectFunction extends PatternSelectFunction[PageFrom, String] {
