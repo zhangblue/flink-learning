@@ -58,6 +58,14 @@
         <scope>runtime</scope>
       </dependency>
 
+      <!--flink 连接hdfs-->
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-shaded-hadoop-2</artifactId>
+        <version>2.4.1-10.0</version>
+        <scope>${scope.type}</scope>
+      </dependency>
+
 
     </dependencies>
   </dependencyManagement>

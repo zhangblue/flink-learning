@@ -70,6 +70,12 @@ under the License.
       <scope>${scope.type}</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-shaded-hadoop-2</artifactId>
+      <scope>${scope.type}</scope>
+    </dependency>
+
 
     <!-- CEP-->
     <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-cep -->
