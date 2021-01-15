@@ -54,25 +54,25 @@ under the License.
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-java</artifactId>
       <version>${flink.version}</version>
-      <scope>provided</scope>
+      <scope>${scope.type}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
       <version>${flink.version}</version>
-      <scope>provided</scope>
+      <scope>${scope.type}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-clients_${scala.binary.version}</artifactId>
       <version>${flink.version}</version>
-      <scope>provided</scope>
+      <scope>${scope.type}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-cep_${scala.binary.version}</artifactId>
       <version>${flink.version}</version>
-      <scope>provided</scope>
+      <scope>${scope.type}</scope>
     </dependency>
 
     <dependency>

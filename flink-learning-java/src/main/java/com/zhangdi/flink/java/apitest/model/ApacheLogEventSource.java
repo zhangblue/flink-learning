@@ -1,13 +1,17 @@
 package com.zhangdi.flink.java.apitest.model;
 
+import java.io.Serializable;
+
 /**
  * @author zhangdi
  * @description: apache 日志源数据
  * @date 2021/1/15 下午5:45
  * @since v1.0
  **/
-public class ApacheLogEventSource {
+public class ApacheLogEventSource implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+  
   private String ip;
   private String userId;
   private Long time;
