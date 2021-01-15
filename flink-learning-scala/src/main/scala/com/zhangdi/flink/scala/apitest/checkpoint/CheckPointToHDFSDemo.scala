@@ -18,7 +18,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
  * @date 2021/1/15 上午12:25
  * @since ${since}
  **/
-object CheckPointToHDFSDemo {
+object CheckPointToHDFSDemo1 {
 
   def main(args: Array[String]): Unit = {
 

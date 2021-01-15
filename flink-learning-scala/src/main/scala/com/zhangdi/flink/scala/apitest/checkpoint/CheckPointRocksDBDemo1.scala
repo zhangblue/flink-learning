@@ -6,6 +6,7 @@ import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.api.common.restartstrategy.RestartStrategies
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.api.common.time.Time
+import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend
 import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.environment.CheckpointConfig
@@ -19,15 +20,18 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
  * @date 2021/1/15 上午11:48
  * @since ${since}
  **/
-object CheckPointRocksDBDemo {
+object CheckPointRocksDBDemo1 {
   def main(args: Array[String]): Unit = {
 
-    val brokers = "172.16.36.123:9092"
-    val topic = "test-topic"
-    val groupId = "test"
+    val parameterTool: ParameterTool = ParameterTool.fromArgs(args)
+    val brokers = parameterTool.get("broker-list") //kafka broker地址
+    val topic = parameterTool.get("topic") //topic 名字
+    val groupId = parameterTool.get("group-id") //groupid
+    val checkpointAddr = parameterTool.get("hdfs-addr") //checkpoint addr
+
+
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
-//    env.setStateBackend(new RocksDBStateBackend("file:////Users/zhangdi/Downloads/tmp", true))
-            env.setStateBackend(new RocksDBStateBackend("hdfs://172.16.36.134:8020/zhangd/flink/checkpoint",true))
+    env.setStateBackend(new RocksDBStateBackend("hdfs://" + checkpointAddr + "/zhangd/flink/checkpoint", true))
     env.enableCheckpointing(5000)
     env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
     //两次checkpoint的时间间隔
@@ -51,7 +55,7 @@ object CheckPointRocksDBDemo {
     }).print("value = ")
 
 
-    env.execute("CheckPointToHDFSDemo")
+    env.execute("CheckPointRocksDBDemo1")
   }
 
   def getKafkaSource(brokers: String, topic: String, groupId: String): FlinkKafkaConsumer[String] = {
