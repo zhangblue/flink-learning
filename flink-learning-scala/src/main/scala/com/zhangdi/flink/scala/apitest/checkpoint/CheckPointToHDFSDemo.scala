@@ -14,7 +14,7 @@ import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 
 /**
- * @description:
+ * @description: flink checkpoint 到HDFS
  * @author zhangdi
  * @date 2021/1/15 上午12:25
  * @since ${since}
@@ -31,7 +31,7 @@ object CheckPointToHDFSDemo {
 
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
-    env.setStateBackend(new FsStateBackend("hdfs://172.16.36.134:8020/bangcle/zhangdi/flink/checkpoint"))
+    env.setStateBackend(new FsStateBackend("hdfs://172.16.36.134:8020/zhangd/flink/checkpoint"))
     env.enableCheckpointing(5000)
     env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
     //两次checkpoint的时间间隔
