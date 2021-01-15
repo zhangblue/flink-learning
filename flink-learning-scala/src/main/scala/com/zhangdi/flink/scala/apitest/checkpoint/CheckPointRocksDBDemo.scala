@@ -25,10 +25,7 @@ object CheckPointRocksDBDemo {
     val brokers = "172.16.36.123:9092"
     val topic = "test-topic"
     val groupId = "test"
-
-
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
-    env.setParallelism(1)
 //    env.setStateBackend(new RocksDBStateBackend("file:////Users/zhangdi/Downloads/tmp", true))
             env.setStateBackend(new RocksDBStateBackend("hdfs://172.16.36.134:8020/zhangd/flink/checkpoint",true))
     env.enableCheckpointing(5000)
