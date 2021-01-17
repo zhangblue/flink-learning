@@ -8,27 +8,18 @@ import java.io.Serializable;
  * @date 2021/1/15 下午5:45
  * @since v1.0
  **/
-public class ApacheLogEventSource implements Serializable {
+public class UserActionLogEventSource implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  
-  private String ip;
+
   private String userId;
   private Long time;
-  private String action;
   private String url;
 
-  public ApacheLogEventSource(String ip, String userId, Long time, String action,
-      String url) {
-    this.ip = ip;
+  public UserActionLogEventSource(String userId, Long time, String url) {
     this.userId = userId;
     this.time = time;
-    this.action = action;
     this.url = url;
-  }
-
-  public String getIp() {
-    return ip;
   }
 
   public String getUserId() {
@@ -37,10 +28,6 @@ public class ApacheLogEventSource implements Serializable {
 
   public Long getTime() {
     return time;
-  }
-
-  public String getAction() {
-    return action;
   }
 
   public String getUrl() {
