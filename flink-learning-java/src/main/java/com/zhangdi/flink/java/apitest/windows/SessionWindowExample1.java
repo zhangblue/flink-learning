@@ -43,7 +43,6 @@ public class SessionWindowExample1 {
 
     StreamExecutionEnvironment executionEnvironment = StreamExecutionEnvironment
         .getExecutionEnvironment();
-    executionEnvironment.setParallelism(1);
     executionEnvironment.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
     DataStreamSource<String> kafkaDataStream = executionEnvironment
@@ -54,15 +53,16 @@ public class SessionWindowExample1 {
     KeyedStream<Tuple3<String, Long, Integer>, String> tuple3StringKeyedStream = map
         .assignTimestampsAndWatermarks(
             WatermarkStrategy.<Tuple3<String, Long, Integer>>forBoundedOutOfOrderness(
-                Duration.ofSeconds(1L))
+                Duration.ofSeconds(1L)) //设置watermark时间为1秒
                 .withTimestampAssigner((element, recordTimestamp) -> element.f1)
+                .withIdleness(Duration.ofMinutes(1)) //标记空闲数据源 ：https://ci.apache.org/projects/flink/flink-docs-release-1.12/zh/dev/event_timestamps_watermarks.html
         ).keyBy((KeySelector<Tuple3<String, Long, Integer>, String>) value -> value.f0);
 
     tuple3StringKeyedStream.print("textKey:");
 
     SingleOutputStreamOperator<String> aggregate = tuple3StringKeyedStream
         .window(EventTimeSessionWindows
-            .withGap(Time.seconds(5L)))
+            .withGap(Time.seconds(5L))) //设置session window的超时时间为5秒
         .aggregate(new SessionWindowTimeAggregate(), new SessionWindowWindowFunction());
 
     aggregate.print("value = ");
@@ -100,6 +100,15 @@ public class SessionWindowExample1 {
       return accumulator;
     }
 
+    /**
+     * 此函数用于将两个窗口中进行合并。只有会话窗口需要实现此函数，如果为非会话窗口，次函数可以直接return null
+     * <p>
+     * 具体请参见：https://blog.csdn.net/nazeniwaresakini/article/details/108576534
+     *
+     * @param a
+     * @param b
+     * @return
+     */
     @Override
     public Tuple2<String, Integer> merge(Tuple2<String, Integer> a, Tuple2<String, Integer> b) {
       return Tuple2.of(a.f0, a.f1 + b.f1);

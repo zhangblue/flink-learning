@@ -13,7 +13,7 @@ public class SensorReading {
   private double temperature;
 
 
-  public SensorReading(String id, long timestamp, Double temperature) {
+  public SensorReading(String id, long timestamp, double temperature) {
     this.id = id;
     this.timestamp = timestamp;
     this.temperature = temperature;
