@@ -25,7 +25,7 @@ import org.apache.flink.util.Collector;
 
 /**
  * @author zhangdi
- * @description: 水位线测试1
+ * @description: 水位线测试2 使用增量聚合+全窗口聚合的方式
  * @date 2021/1/18 下午12:17
  * @since v1.0
  **/

@@ -1,0 +1,35 @@
+package com.zhangdi.flink.java.apitest.commons.window.function;
+
+import com.zhangdi.flink.java.apitest.model.PageFrom;
+import java.util.Iterator;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.util.Collector;
+
+/**
+ * @author zhangdi
+ * @description: 自定义ProcessWindowFunction
+ * @date 2021/1/19 上午12:22
+ * @since v1.0
+ **/
+public class PageFromProcessWindowFunction extends
+    ProcessWindowFunction<PageFrom, String, String, TimeWindow> {
+
+
+  @Override
+  public void process(String s, Context context, Iterable<PageFrom> elements, Collector<String> out)
+      throws Exception {
+
+    int size = 0;
+    Iterator<PageFrom> iterator = elements.iterator();
+    StringBuffer sb = new StringBuffer();
+    while (iterator.hasNext()) {
+      PageFrom next = iterator.next();
+      sb.append(next.getIp() + ",");
+      size++;
+    }
+    out.collect(
+        "用户 " + s + " 在窗口范围 " + context.window().getStart() + " - " + context.window().getEnd()
+            + " 共访问了 " + size + " 次。 访问IP为 [" + sb.toString() + "] ");
+  }
+}

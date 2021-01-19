@@ -22,7 +22,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 /**
  * @author zhangdi
- * @description: 水位线测试1
+ * @description: 水位线测试1 使用增量聚合的方式
  * @date 2021/1/18 下午12:17
  * @since v1.0
  **/

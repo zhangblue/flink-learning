@@ -9,11 +9,13 @@ package com.zhangdi.flink.java.apitest.model;
 public class PageFrom {
 
   private String id;
+  private String ip;
   private String from;
   private Long time;
 
-  public PageFrom(String id, String from, Long time) {
+  public PageFrom(String id, String ip, String from, Long time) {
     this.id = id;
+    this.ip = ip;
     this.from = from;
     this.time = time;
   }
@@ -22,23 +24,15 @@ public class PageFrom {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public String getIp() {
+    return ip;
   }
 
   public String getFrom() {
     return from;
   }
 
-  public void setFrom(String from) {
-    this.from = from;
-  }
-
   public Long getTime() {
     return time;
-  }
-
-  public void setTime(Long time) {
-    this.time = time;
   }
 }
