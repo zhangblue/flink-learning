@@ -14,6 +14,6 @@ public class PageFromMapFunction implements MapFunction<String, PageFrom> {
   @Override
   public PageFrom map(String value) throws Exception {
     String[] split = value.split(",");
-    return new PageFrom(split[0], split[1], split[2], Long.parseLong(split[3]) * 1000);
+    return new PageFrom(split[0], split[1], split[2], Long.parseLong(split[3]));
   }
 }

@@ -19,7 +19,8 @@ public class PageFromProcessWindowFunction extends
   @Override
   public void process(String s, Context context, Iterable<PageFrom> elements, Collector<String> out)
       throws Exception {
-
+    System.out.println("窗口 " + context.window().getStart() + " - " + context.window().getEnd()
+        + " 关闭！");
     int size = 0;
     Iterator<PageFrom> iterator = elements.iterator();
     StringBuffer sb = new StringBuffer();
@@ -30,6 +31,7 @@ public class PageFromProcessWindowFunction extends
     }
     out.collect(
         "用户 " + s + " 在窗口范围 " + context.window().getStart() + " - " + context.window().getEnd()
-            + " 共访问了 " + size + " 次。 访问IP为 [" + sb.toString() + "] ");
+            + " 共访问了 " + size + " 次, 当前水位线为 " + context.currentWatermark() + " 。 访问IP为 [" + sb
+            .toString() + "] ");
   }
 }

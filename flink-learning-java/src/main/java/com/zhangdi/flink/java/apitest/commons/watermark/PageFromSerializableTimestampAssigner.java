@@ -11,6 +11,7 @@ import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
  **/
 public class PageFromSerializableTimestampAssigner implements
     SerializableTimestampAssigner<PageFrom> {
+
   @Override
   public long extractTimestamp(PageFrom element, long recordTimestamp) {
     return element.getTime();
