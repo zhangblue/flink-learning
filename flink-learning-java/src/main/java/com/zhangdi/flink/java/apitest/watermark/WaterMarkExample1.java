@@ -50,11 +50,11 @@ public class WaterMarkExample1 {
     SingleOutputStreamOperator<String> aggregate = executionEnvironment
         .addSource(new FlinkKafkaConsumer<String>(topic, new SimpleStringSchema(), properties))
         .map(new MyMapFunction())
-        .assignTimestampsAndWatermarks(new MyWatermarkStrategy(Duration.ofSeconds(10).toMillis()).
+        .assignTimestampsAndWatermarks(new MyWatermarkStrategy(Duration.ofSeconds(5).toMillis()).
             withTimestampAssigner(new MySerializableTimestampAssigner()))
         .keyBy(t -> t.f0)
         .window(
-            TumblingEventTimeWindows.of(Time.seconds(5))
+            TumblingEventTimeWindows.of(Time.seconds(10))
         )
         .process(new MyProcessWindowFunction());
 
@@ -115,7 +115,7 @@ public class WaterMarkExample1 {
 
     private long boundTs;
 
-    public MyWatermarkStrategy(long boundTs) {
+    public  MyWatermarkStrategy(long boundTs) {
       this.boundTs = boundTs;
     }
 

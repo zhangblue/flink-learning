@@ -39,29 +39,23 @@ public class TumblingWindowExample1 {
     StreamExecutionEnvironment executionEnvironment = StreamExecutionEnvironment
         .getExecutionEnvironment();
     executionEnvironment.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    executionEnvironment.setParallelism(1);
 
-//    executionEnvironment.getConfig().setAutoWatermarkInterval(1 * 1000);
+    executionEnvironment.getConfig().setAutoWatermarkInterval(1 * 1000);
 
     SingleOutputStreamOperator<PageFrom> map = executionEnvironment
         .addSource(new FlinkKafkaConsumer<String>(topic, new SimpleStringSchema(), properties)
-            .setStartFromLatest())//.setParallelism(2)
-        .map(new PageFromMapFunction());//.setParallelism(4)
-
+            .setStartFromLatest())
+        .map(new PageFromMapFunction()).setParallelism(2);
     map.print();
 
     SingleOutputStreamOperator<String> process = map.assignTimestampsAndWatermarks(
         WatermarkStrategy.<PageFrom>forBoundedOutOfOrderness(Duration.ofSeconds(5))
             .withTimestampAssigner(new PageFromSerializableTimestampAssigner()))
-//        .assignTimestampsAndWatermarks(
-//            new PageFromWatermarkStrategy(Duration.ofSeconds(5).toMillis())
-//                .withTimestampAssigner(new PageFromSerializableTimestampAssigner()))
         .keyBy(x -> x.getId())
         .window(TumblingEventTimeWindows.of(Time.seconds(10)))
-        .process(new PageFromProcessWindowFunction());//.setParallelism(2);
+        .process(new PageFromProcessWindowFunction()).setParallelism(3);
 
-    process.print("success = ");//.setParallelism(1);
-    process.printToErr("error = ");//.setParallelism(1);
+    process.print("success = ").setParallelism(1);
 
     try {
       System.out.println(executionEnvironment.getExecutionPlan());

@@ -35,4 +35,14 @@ public class PageFrom {
   public Long getTime() {
     return time;
   }
+
+  @Override
+  public String toString() {
+    return "PageFrom{" +
+        "id='" + id + '\'' +
+        ", ip='" + ip + '\'' +
+        ", from='" + from + '\'' +
+        ", time=" + time +
+        '}';
+  }
 }
