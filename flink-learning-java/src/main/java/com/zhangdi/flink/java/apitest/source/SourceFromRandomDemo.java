@@ -1,6 +1,7 @@
 package com.zhangdi.flink.java.apitest.source;
 
 import com.zhangdi.flink.java.apitest.model.SensorReading;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -19,9 +20,23 @@ public class SourceFromRandomDemo {
     DataStreamSource<SensorReading> sensorReadingDataStreamSource = env
         .addSource(new SensorSourceFromRandom());
 
-    sensorReadingDataStreamSource.print("value = ");
+    sensorReadingDataStreamSource.map(new SingleMapFunction()).print();
+
 
     env.execute("flink-learning-java");
+  }
+
+
+  private static class SingleMapFunction implements MapFunction<SensorReading, String> {
+
+    public SingleMapFunction() {
+      System.out.println("调用构造器！");
+    }
+
+    @Override
+    public String map(SensorReading value) throws Exception {
+      return value.toString();
+    }
   }
 
 }

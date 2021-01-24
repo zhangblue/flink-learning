@@ -39,7 +39,7 @@ public class SensorSourceFromRandom extends RichParallelSourceFunction<SensorRea
             tuple2.f1 + (rand.nextGaussian() * 0.5d));
         ctx.collect(sensorReading);
       }
-      TimeUnit.SECONDS.sleep(1);
+      TimeUnit.SECONDS.sleep(10);
     }
   }
 

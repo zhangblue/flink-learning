@@ -16,7 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <flink.version>1.11.3</flink.version>
+    <flink.version>1.12.0</flink.version>
     <target.java.version>1.8</target.java.version>
     <scala.binary.version>2.11</scala.binary.version>
     <scala.version>2.11.12</scala.version>
@@ -24,6 +24,7 @@
     <maven.compiler.target>${target.java.version}</maven.compiler.target>
     <log4j.version>2.12.1</log4j.version>
     <fastjson.version>1.2.70</fastjson.version>
+    <aviator.version>5.2.2</aviator.version>
 <!--    <scope.type>provided</scope.type>-->
         <scope.type>compile</scope.type>
   </properties>
@@ -71,6 +72,13 @@
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-statebackend-rocksdb_${scala.binary.version}</artifactId>
         <version>${flink.version}</version>
+      </dependency>
+
+      <!--Google aviator-->
+      <dependency>
+        <groupId>com.googlecode.aviator</groupId>
+        <artifactId>aviator</artifactId>
+        <version>${aviator.version}</version>
       </dependency>
 
     </dependencies>

@@ -10,13 +10,13 @@ public class PageFrom {
 
   private String id;
   private String ip;
-  private String from;
+  private String evenType;
   private Long time;
 
-  public PageFrom(String id, String ip, String from, Long time) {
+  public PageFrom(String id, String ip, String evenType, Long time) {
     this.id = id;
     this.ip = ip;
-    this.from = from;
+    this.evenType = evenType;
     this.time = time;
   }
 
@@ -28,8 +28,8 @@ public class PageFrom {
     return ip;
   }
 
-  public String getFrom() {
-    return from;
+  public String getEvenType() {
+    return evenType;
   }
 
   public Long getTime() {
@@ -41,7 +41,7 @@ public class PageFrom {
     return "PageFrom{" +
         "id='" + id + '\'' +
         ", ip='" + ip + '\'' +
-        ", from='" + from + '\'' +
+        ", evenType='" + evenType + '\'' +
         ", time=" + time +
         '}';
   }

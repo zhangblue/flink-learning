@@ -78,6 +78,8 @@ public class AggregateFunctionExample1 {
   public static class MyAggregateFunction implements
       AggregateFunction<Tuple2<String, Long>, Tuple3<String, Long, Integer>, String> {
 
+
+
     /**
      * 初始化函数
      *
