@@ -3,8 +3,12 @@ package com.zhangdi.flink.java.api.test.stream.test.windows;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Iterator;
+import java.util.Properties;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -12,6 +16,7 @@ import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 
@@ -24,27 +29,41 @@ import org.apache.flink.util.OutputTag;
 public class LatenessExample1 {
 
   public static void main(String[] args) {
+    ParameterTool parameterTool = ParameterTool.fromArgs(args);
+
+    String brokers = parameterTool.get("broker-list", "172.16.36.123:9092");
+    String topic = parameterTool.get("topic", "test-topic");
+    String groupId = parameterTool.get("group-id", "test");
+
+    Properties properties = new Properties();
+    properties.setProperty("bootstrap.servers", brokers);
+    properties.setProperty("group.id", groupId);
+
     StreamExecutionEnvironment executionEnvironment = StreamExecutionEnvironment
         .getExecutionEnvironment();
-    executionEnvironment.setParallelism(1);
 
-    DataStreamSource<Tuple2<String, Long>> tuple2DataStreamSource = executionEnvironment
-        .fromElements(
-            Tuple2.of("user_1", 10000L),
-            Tuple2.of("user_1", 4000L),
-            Tuple2.of("user_1", 9000L)
-        );
+    SingleOutputStreamOperator<Tuple2<String, Long>> tupleSource = executionEnvironment
+        .addSource(new FlinkKafkaConsumer<String>(topic, new SimpleStringSchema(), properties))
+        .map(new MapFunction<String, Tuple2<String, Long>>() {
+          @Override
+          public Tuple2<String, Long> map(String s) throws Exception {
+            String[] split = s.split(",");
+            return Tuple2.<String, Long>of(split[0], Long.parseLong(split[1]));
+          }
+        });
 
+    // 定义旁路输出标记
     OutputTag<Tuple2<String, Long>> lateTag = new OutputTag<Tuple2<String, Long>>("late") {
     };
 
-    SingleOutputStreamOperator<String> process = tuple2DataStreamSource
+    SingleOutputStreamOperator<String> process = tupleSource
         .assignTimestampsAndWatermarks(
-            WatermarkStrategy.<Tuple2<String, Long>>forBoundedOutOfOrderness(Duration.ZERO)
-                .withTimestampAssigner(((element, recordTimestamp) -> element.f1)))
+            WatermarkStrategy.<Tuple2<String, Long>>forBoundedOutOfOrderness(
+                Duration.ZERO) //设置没有watermarter
+                .withTimestampAssigner((element, recordTimestamp) -> element.f1))
         .keyBy(x -> x.f0)
-        .window(TumblingEventTimeWindows.of(Time.seconds(2)))
-        .sideOutputLateData(lateTag)
+        .window(TumblingEventTimeWindows.of(Time.seconds(5))) //设置滚动窗口大小5秒
+        .sideOutputLateData(lateTag) //设置旁路输出标记
         .process(
             new ProcessWindowFunction<Tuple2<String, Long>, String, String, TimeWindow>() {
               @Override
@@ -68,8 +87,8 @@ public class LatenessExample1 {
               }
             });
 
-    process.print("正常的数据为 : ");
-    process.getSideOutput(lateTag).printToErr("超时的数据为 : ");
+    process.print("正常的数据为 : "); //匹配到的主流输出
+    process.getSideOutput(lateTag).printToErr("超时的数据为 : "); //旁路输出迟到的数据
 
     try {
       executionEnvironment.execute("侧数据流");
